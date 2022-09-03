@@ -14,7 +14,8 @@ import {
   InputGroupText,
   InputGroup,
   Container,
-  Col
+  Col,
+  Spinner
 } from "reactstrap";
 
 // core components
@@ -35,7 +36,6 @@ function LoginPage() {
 
   const handleLogin = (e) => {
     e.preventDefault()
-    // console.log(email,password);
     signIn(email, password);
   }
 
@@ -77,7 +77,6 @@ function LoginPage() {
                       ></img>
                     </div>
                   </CardHeader>
-
 
                   <CardBody>
 
@@ -137,8 +136,10 @@ function LoginPage() {
                       className="btn-round"
                       color="primary"
                       size="lg"
+                      disabled={isLoading}
                     >
-                      Login
+                      {!isLoading && "Login"}
+                      {isLoading && <Spinner size="sm" />}
                     </Button>
 
                     {/* Create Account */}

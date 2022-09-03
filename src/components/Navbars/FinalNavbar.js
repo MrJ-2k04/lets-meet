@@ -1,7 +1,7 @@
 
 
 import { useEffect, useState } from "react";
-import { Link, Navigate, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 import {
     Button,
@@ -17,7 +17,6 @@ import {
     Nav,
     Container,
     UncontrolledTooltip,
-    NavbarText,
 } from "reactstrap";
 
 // Hooks
@@ -30,8 +29,7 @@ function FinalNavbar() {
     const [navbarColor, setNavbarColor] = useState("navbar-transparent");
     const [collapseOpen, setCollapseOpen] = useState(false);
     const { user } = useAuth();
-    const { signUserOut, isLoading, error } = useSignout()
-    const nav = useNavigate();
+    const { signUserOut } = useSignout()
 
     useEffect(() => {
         const updateNavbarColor = () => {
@@ -64,7 +62,7 @@ function FinalNavbar() {
                     }}
                 />
             ) : null}
-            <Navbar className={"fixed-top " + navbarColor} expand="lg" color="info">
+            <Navbar className={"fixed-top " + navbarColor} expand="lg" color="primary">
                 <Container>
 
                     <div className="navbar-translate">

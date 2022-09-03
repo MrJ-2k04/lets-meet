@@ -5,3 +5,13 @@
     top: 0.25rem;
     position: relative;
 }
+
+/* Primary Colors */
+.bg-primary, .btn-primary  {
+    background-color: #F95764 !important;
+    box-shadow: none !important;
+}
+
+.btn-primary:hover  {
+    background-color: #fd7a85 !important;
+}
