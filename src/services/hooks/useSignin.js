@@ -28,32 +28,29 @@ export const useSignin =  ()=>{
     const signIn = async (email, password)=>{
         setError(null)
         setIsLoading(true)
-        setTimeout(() => {
-            setIsLoading(false);
-            setError(null)
-        }, 2000);
-        // try {
-        //     const res = await signInWithEmailAndPassword(auth, email, password)
+        
+        try {
+            const res = await signInWithEmailAndPassword(auth, email, password)
             
-        //     if (!res) {
-        //         throw new Error("Cannot sign in to the account!")
-        //     }
+            if (!res) {
+                throw new Error("Cannot sign in to the account!")
+            }
 
-        //     // Update Global User State
-        //     dispatch({type: "LOGIN", payload: res.user})
+            // Update Global User State
+            dispatch({type: "LOGIN", payload: res.user})
 
-        //     if (isMounted) {
-        //         setIsLoading(false)
-        //         setError(null)
-        //         // performProcess(res)
-        //     }
+            if (isMounted) {
+                setIsLoading(false)
+                setError(null)
+                // performProcess(res)
+            }
 
-        // } catch (error) {
-        //     if (isMounted) {
-        //         setError(error.message)
-        //         setIsLoading(false)
-        //     }
-        // }
+        } catch (error) {
+            if (isMounted) {
+                setError(error.message)
+                setIsLoading(false)
+            }
+        }
     }
     
     useEffect(()=>{
