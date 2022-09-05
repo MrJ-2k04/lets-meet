@@ -28,6 +28,12 @@ export const AuthContextProvider = ({ children })=>{
 
     useEffect(()=>{
         const unsub = auth.onAuthStateChanged((user)=>{
+            // if (user!==null) {
+            //     if (user.providerId!=="firebase") {
+            //         user.displayName = user.name;
+            //         console.log("one tap user");
+            //     }
+            // }
             dispatch({ type:"AUTH_IS_READY", payload:user })
             unsub()
         })

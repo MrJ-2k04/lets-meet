@@ -28,7 +28,7 @@ function DarkFooter() {
           </Col>
           <Col>
             <div className="copyright" id="copyright">
-              © Copyright {new Date().getFullYear()} | Designed & Created by MrJ
+              © Copyright {new Date().getFullYear()} | Designed & Created by <a href="#">Mr J</a>
             </div>
           </Col>
         </Row>

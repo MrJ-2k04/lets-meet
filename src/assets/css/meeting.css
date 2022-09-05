@@ -1,0 +1,68 @@
+.outer-container{
+    display: flex;
+    flex-direction: column;
+    align-content: center;
+    justify-content: center;
+    align-items: center;
+    margin-top: 62px;
+    height: calc(100vh - 72px);
+    width: 100%;
+    text-align: center;
+}
+.inner-container{
+    height: 100%;
+    width: 100%;
+    justify-content: center;
+    align-items: center;
+}
+
+
+/* lg and more */
+@media only screen and (min-width:768px) {
+    .meeting-image{
+        margin-left: 2rem;
+        max-width: 80%;
+    }
+    .url-container{
+        padding-right: 55px;
+    }
+}
+/* xl and more */
+@media only screen and (min-width:1200px) {
+    .meeting-image{
+        max-width: 68%;
+    }
+}
+
+/* lg */
+@media only screen and (max-width:992px) {
+    .meeting-image{
+        max-width: 80%;
+    }
+}
+/* md */
+@media only screen and (max-width:767px) {
+    .meeting-image{
+        max-width: 70%;
+    }
+    .url-container{
+        padding: 5px 35px;
+    }
+    .meeting-image-container{
+        display: inline-flex;
+        justify-content: center;
+    }
+    .outer-container{
+        margin-top: 82px;
+    }
+}
+/* sm and xs */
+@media only screen and (max-width:575px) {
+    .meeting-image{
+        max-width: 100%;
+    }
+}
+
+.page-header::after{
+    content: none;
+}

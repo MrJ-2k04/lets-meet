@@ -19,7 +19,6 @@ import {
 } from "reactstrap";
 
 // core components
-import ExamplesNavbar from "components/Navbars/ExamplesNavbar.js";
 import TransparentFooter from "components/Footers/TransparentFooter.js";
 import FinalNavbar from "components/Navbars/FinalNavbar";
 import { Link } from "react-router-dom";
@@ -32,11 +31,14 @@ function LoginPage() {
 
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
-  const { signIn, isLoading, error } = useSignin()
+  const { signIn, signInWithGoogle, isLoading, error } = useSignin()
 
   const handleLogin = (e) => {
     e.preventDefault()
     signIn(email, password);
+    if (error!==null) {
+      console.log(error);
+    }
   }
 
   useEffect(() => {
@@ -45,6 +47,7 @@ function LoginPage() {
     document.documentElement.classList.remove("nav-open");
     window.scrollTo(0, 0);
     document.body.scrollTop = 0;
+
     return function cleanup() {
       document.body.classList.remove("login-page");
       document.body.classList.remove("sidebar-collapse");
@@ -58,9 +61,9 @@ function LoginPage() {
       <div className="page-header clear-filter" filter-color="blue">
         <div
           className="page-header-image"
-          style={{
-            backgroundImage: "url(" + require("assets/img/login.jpg") + ")"
-          }}
+        // style={{
+        //   backgroundImage: "url(" + require("assets/img/login.jpg") + ")"
+        // }}
         ></div>
         <div className="content">
           <Container>
@@ -97,8 +100,8 @@ function LoginPage() {
                         type="email"
                         onFocus={() => setFirstFocus(true)}
                         onBlur={() => setFirstFocus(false)}
-                        value={email} 
-                        onChange={(e)=>setEmail(e.target.value)}
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
                         required
                       ></Input>
                     </InputGroup>
@@ -120,8 +123,8 @@ function LoginPage() {
                         type="password"
                         onFocus={() => setLastFocus(true)}
                         onBlur={() => setLastFocus(false)}
-                        value={password} 
-                        onChange={(e)=>setPassword(e.target.value)}
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
                         required
                       ></Input>
                     </InputGroup>
@@ -137,9 +140,14 @@ function LoginPage() {
                       color="primary"
                       size="lg"
                       disabled={isLoading}
+                      type="submit"
                     >
                       {!isLoading && "Login"}
                       {isLoading && <Spinner size="sm" />}
+                    </Button>
+
+                    <Button onClick={signInWithGoogle} id="google-login" block className="btn-round" color="primary" size="lg">
+                      Login with Google
                     </Button>
 
                     {/* Create Account */}
@@ -163,7 +171,7 @@ function LoginPage() {
                         </a>
                       </h6>
                     </div>
-                    
+
                   </CardFooter>
 
                 </Form>

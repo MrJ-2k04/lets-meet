@@ -14,22 +14,3 @@ root.render(
     <App />
   </AuthContextProvider>
 );
-
-
-{/* <Route path="/index" element={<Index />} />
-  <Route
-    path="/nucleo-icons"
-    element={<NucleoIcons />}
-  />
-  <Route
-    path="/landing-page"
-    element={<LandingPage />}
-  />
-  <Route
-    path="/profile-page"
-    element={<ProfilePage />}
-  />
-  <Route
-    path="/login-page"
-    element={<LoginPage />}
-  /> */}
