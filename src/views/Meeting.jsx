@@ -7,6 +7,7 @@ import DarkFooter from "components/Footers/DarkFooter";
 
 // Stylish Stuff
 import { Button, Col, Input, InputGroup, InputGroupAddon, InputGroupText, Row } from "reactstrap";
+import { motion } from "framer-motion";
 
 const title = "Premium Quality Realtime Meetings, now available for free.";
 const para = "Letsmeet is developed using highly Secured Realtime Communication Service. No unauthorized person can access your personal meeting."
@@ -29,17 +30,17 @@ function Meeting() {
         };
     }, []);
 
-    
+
 
     const getValidRoomCode = (oriUrl) => {
-        
-        const getDashes = (roomCode)=>{
+
+        const getDashes = (roomCode) => {
             // Checks if code separator - (dashes) are present
             if (roomCode.includes("-")) {
                 let iterator = roomCode.matchAll("-");
-    
+
                 // Checking dash locations
-                let dashCheck = (iterator.next().value.index===3 && iterator.next().value.index===8 && iterator.next().done)
+                let dashCheck = (iterator.next().value.index === 3 && iterator.next().value.index === 8 && iterator.next().done)
                 if (dashCheck) {
                     // Check for Length "abc-defg-hij" = 13
                     if (roomCode.length === 12) {
@@ -58,7 +59,7 @@ function Meeting() {
             }
             return "/";
         }
-        
+
         // Removes Starting "/" if any
         if (oriUrl.startsWith("/")) {
             oriUrl = oriUrl.slice(1);
@@ -73,12 +74,12 @@ function Meeting() {
         // When full Http formatted url is provided
         try {
             let subUrl = new URL(oriUrl).pathname;
-            
+
             // Checks if / is occured exactly twice "/meeting/abc-defg-hij"
             let slashCheck = subUrl.match(new RegExp("/", "g")).length === 2;
-            
+
             if (slashCheck) {
-                let roomCode = subUrl.slice(subUrl.indexOf("/", 1)+1);
+                let roomCode = subUrl.slice(subUrl.indexOf("/", 1) + 1);
                 return getDashes(roomCode);
             }
         }
@@ -97,9 +98,9 @@ function Meeting() {
     const handleMeetingRequest = () => {
         if (url !== "") {
             const roomCode = getValidRoomCode(url)
-            if (roomCode!=="/") {
+            if (roomCode !== "/") {
                 console.log(roomCode);
-            }else{
+            } else {
                 console.log("Invalid Code");
             }
         } else {
@@ -125,7 +126,15 @@ function Meeting() {
 
                             {/* Text Section */}
                             <Col md={{ size: 5, order: 2 }} className="url-container">
-                                <h3>{title}</h3>
+                                <motion.h3
+                                    initial={{
+                                        y:-200
+                                    }}
+                                    animate={{
+                                        y:0
+                                    }}>
+                                    {title}
+                                </motion.h3>
                                 <p>{para}</p>
                                 {/* Input Controls */}
                                 <Row>
@@ -167,7 +176,7 @@ function Meeting() {
                                                 onBlur={() => setFirstFocus(false)}
                                                 value={url}
                                                 onChange={(e) => setUrl(e.target.value)}
-                                                onKeyUp={(e)=>e.key==="Enter"?handleMeetingRequest():""}
+                                                onKeyUp={(e) => e.key === "Enter" ? handleMeetingRequest() : ""}
                                                 required
                                             ></Input>
                                         </InputGroup>
