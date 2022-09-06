@@ -1,7 +1,16 @@
+
+import { useEffect } from 'react';
+
 function MeetingRoom() {
+
+
+    useEffect(()=>{
+
+    },[])
+
     return ( 
-        <div>
-            <h2>This is Meeting Room Component</h2>
+        <div className="container">
+            Meeting Room Comp
         </div>
      );
 }

@@ -15,9 +15,7 @@ import "assets/css/app.css"
 // Pages
 import Index from "views/Index.js";
 import NucleoIcons from "views/NucleoIcons.js";
-import LoginPage from "views/examples/LoginPage.js";
 import SignUp from "views/index-sections/SignUp";
-import LandingPage from "views/examples/LandingPage.js";
 import ProfilePage from "views/examples/ProfilePage.js";
 // Self Made Pages
 import HomePage from "views/HomePage";
@@ -25,6 +23,7 @@ import Meeting from "views/Meeting";
 import MeetingRoom from "views/MeetingRoom";
 import FourDotLoader from "components/Loaders/FourDotLoader";
 import Login from "views/Login";
+// import OneTapLogin from "services/hooks/OneTapLogin";
 
 function App() {
 
@@ -32,12 +31,17 @@ function App() {
 
     return (
         <div className="App">
+            {/* <OneTapLogin /> */}
             {authIsReady &&
                 <BrowserRouter>
                     <Routes>
                         <Route path="/" element={<HomePage />} />
 
                         <Route path="/index" element={<Index />} />
+                        <Route
+                            path="/nucleo-icons"
+                            element={<NucleoIcons />}
+                        />
 
                         <Route path='/login' element={
                             <>

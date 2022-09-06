@@ -3,7 +3,7 @@
 import DarkFooter from "components/Footers/DarkFooter";
 import IndexHeader from "components/Headers/IndexHeader";
 import FinalNavbar from "components/Navbars/FinalNavbar";
-import IndexNavbar from "components/Navbars/IndexNavbar";
+// import IndexNavbar from "components/Navbars/IndexNavbar";
 import Navbar from "components/Navbars/Navbar";
 
 import { useEffect } from "react";

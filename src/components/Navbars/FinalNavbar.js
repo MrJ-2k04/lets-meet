@@ -1,7 +1,7 @@
 
 
 import { useEffect, useState } from "react";
-import { Link, Navigate, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 import {
     Button,
@@ -17,7 +17,6 @@ import {
     Nav,
     Container,
     UncontrolledTooltip,
-    NavbarText,
 } from "reactstrap";
 
 // Hooks
@@ -25,13 +24,12 @@ import { useAuth } from "services/hooks/useAuth";
 import { useSignout } from "services/hooks/useSignout";
 
 
-function FinalNavbar() {
+function FinalNavbar(props) {
 
-    const [navbarColor, setNavbarColor] = useState("navbar-transparent");
+    const [navbarColor, setNavbarColor] = useState(props.color===undefined?"navbar-transparent":props.color);
     const [collapseOpen, setCollapseOpen] = useState(false);
     const { user } = useAuth();
-    const { signUserOut, isLoading, error } = useSignout()
-    const nav = useNavigate();
+    const { signUserOut } = useSignout()
 
     useEffect(() => {
         const updateNavbarColor = () => {
@@ -44,7 +42,7 @@ function FinalNavbar() {
                 document.documentElement.scrollTop < 400 ||
                 document.body.scrollTop < 400
             ) {
-                setNavbarColor("navbar-transparent");
+                setNavbarColor(props.color===undefined?"navbar-transparent":props.color);
             }
         };
         window.addEventListener("scroll", updateNavbarColor);
@@ -64,7 +62,7 @@ function FinalNavbar() {
                     }}
                 />
             ) : null}
-            <Navbar className={"fixed-top " + navbarColor} expand="lg" color="info">
+            <Navbar className={"fixed-top " + navbarColor} expand="lg" color={props.color===undefined?"primary":props.color}>
                 <Container>
 
                     <div className="navbar-translate">
