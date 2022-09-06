@@ -23,7 +23,7 @@ function Meeting() {
         window.scrollTo(0, 0);
         document.body.scrollTop = 0;
 
-        return function clseanup() {
+        return function cleanup() {
             document.body.classList.remove("meeting-page");
             document.body.classList.remove("sidebar-collapse");
         };
