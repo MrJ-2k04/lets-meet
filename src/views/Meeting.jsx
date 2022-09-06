@@ -53,26 +53,38 @@ function Meeting() {
 
                 if (beforeSlashValid) {
                     let filteredUrl = subUrl.slice(subUrl.indexOf("/", 1));
-                    // Removes Final - (dashes)
+                    // Checks Final - (dashes) if present
                     if (filteredUrl.includes("-")) {
-                        filteredUrl = filteredUrl.replaceAll("-", "");
+                        let iterator = filteredUrl.matchAll("-")
+                        iterator.next()
+                        iterator.next()
+                        let twoDashValid = iterator.next().done
+                        if (twoDashValid) {
+                            // Final Check of Length
+                            if (filteredUrl.length === 13) {
+                                // Success
+                                return filteredUrl;
+                            }
+                        }
                     }
-                    // Final Check of Length
-                    if (filteredUrl.length === 11) {
-                        // Success
-                        return filteredUrl;
+                    // Adds Final - (dashes) if not present
+                    else {
+                        console.log(filteredUrl+"dashes");
+                        // if (filteredUrl.length === 11) {
+                        //     filteredUrl.slice(0, 4) + "-" + randomString.slice(4, 8) + "-" + randomString.slice(8)
+                        // }
                     }
-                    return "/"
-                } else {
                     return "/";
                 }
+                return "/";
+
             } catch (error) {
                 console.log("some error occured while parsing url", error);
                 return "/"
             }
         } else {
 
-            // Removes Final - (dashes)
+            // Adds Final - (dashes) if not present
             if (oriUrl.includes("-")) {
                 oriUrl = oriUrl.replaceAll("-", "");
             }
