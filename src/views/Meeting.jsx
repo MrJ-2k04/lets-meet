@@ -23,87 +23,88 @@ function Meeting() {
         window.scrollTo(0, 0);
         document.body.scrollTop = 0;
 
-        return function cleanup() {
+        return function clseanup() {
             document.body.classList.remove("meeting-page");
             document.body.classList.remove("sidebar-collapse");
         };
     }, []);
 
-    const filterUrl = (oriUrl) => {
+    
 
+    const getValidRoomCode = (oriUrl) => {
+        
+        const getDashes = (roomCode)=>{
+            // Checks if code separator - (dashes) are present
+            if (roomCode.includes("-")) {
+                let iterator = roomCode.matchAll("-");
+    
+                // Checking dash locations
+                let dashCheck = (iterator.next().value.index===3 && iterator.next().value.index===8 && iterator.next().done)
+                if (dashCheck) {
+                    // Check for Length "abc-defg-hij" = 13
+                    if (roomCode.length === 12) {
+                        return roomCode;
+                    }
+                }
+            }
+            // If code separator - (dashes) not present, add it
+            else {
+                // If code length is valid without dashes
+                if (roomCode.length === 10) {
+                    // Add dashes and return
+                    roomCode = roomCode.slice(0, 3) + "-" + roomCode.slice(3, 7) + "-" + roomCode.slice(7);
+                    return roomCode;
+                }
+            }
+            return "/";
+        }
+        
         // Removes Starting "/" if any
         if (oriUrl.startsWith("/")) {
             oriUrl = oriUrl.slice(1);
         }
+
         // Removes Trailing "/" if any
         if (oriUrl.endsWith("/")) {
             oriUrl = oriUrl.slice(0, oriUrl.length - 1)
         }
 
-        if (oriUrl.includes("/")) {
-            try {
-                // When full Http formatted url is provided
-                let subUrl = new URL(oriUrl).pathname;
 
-                // Checks whether / is repeated more than twice
-                let iterator = subUrl.matchAll("/")
-                iterator.next();
-                iterator.next();
-                const beforeSlashValid = iterator.next().done;
-
-                if (beforeSlashValid) {
-                    let filteredUrl = subUrl.slice(subUrl.indexOf("/", 1));
-                    // Checks Final - (dashes) if present
-                    if (filteredUrl.includes("-")) {
-                        let iterator = filteredUrl.matchAll("-")
-                        iterator.next()
-                        iterator.next()
-                        let twoDashValid = iterator.next().done
-                        if (twoDashValid) {
-                            // Final Check of Length
-                            if (filteredUrl.length === 13) {
-                                // Success
-                                return filteredUrl;
-                            }
-                        }
-                    }
-                    // Adds Final - (dashes) if not present
-                    else {
-                        console.log(filteredUrl+"dashes");
-                        // if (filteredUrl.length === 11) {
-                        //     filteredUrl.slice(0, 4) + "-" + randomString.slice(4, 8) + "-" + randomString.slice(8)
-                        // }
-                    }
-                    return "/";
-                }
-                return "/";
-
-            } catch (error) {
-                console.log("some error occured while parsing url", error);
-                return "/"
+        // When full Http formatted url is provided
+        try {
+            let subUrl = new URL(oriUrl).pathname;
+            
+            // Checks if / is occured exactly twice "/meeting/abc-defg-hij"
+            let slashCheck = subUrl.match(new RegExp("/", "g")).length === 2;
+            
+            if (slashCheck) {
+                let roomCode = subUrl.slice(subUrl.indexOf("/", 1)+1);
+                return getDashes(roomCode);
             }
-        } else {
-
-            // Adds Final - (dashes) if not present
-            if (oriUrl.includes("-")) {
-                oriUrl = oriUrl.replaceAll("-", "");
-            }
-
-            // Final Check of Length
-            if (oriUrl.length === 10) {
-                // Success
-                return "/" + oriUrl;
-            }
-            return "/";
         }
+        // When only meeting code is provided
+        catch (error) {
+            // Must not contain any slashes "/"
+            if (!oriUrl.includes("/")) {
+                return getDashes(oriUrl);
+            }
+        }
+        console.log("finally part of getRoomCode");
+        return "/";
     }
+
 
     const handleMeetingRequest = () => {
         if (url !== "") {
-            console.log(url, "\nurl:", filterUrl(url));
+            const roomCode = getValidRoomCode(url)
+            if (roomCode!=="/") {
+                console.log(roomCode);
+            }else{
+                console.log("Invalid Code");
+            }
         } else {
             let randomString = Math.random().toString(36).substring(2, 12);
-            // Adding - at 5th position
+            // Adding - at 4th and 8th position "aaa-aaaa-aaa"
             let newRoomId = randomString.slice(0, 3) + "-" + randomString.slice(3, 7) + "-" + randomString.slice(7);
 
             console.log(newRoomId);
@@ -166,6 +167,7 @@ function Meeting() {
                                                 onBlur={() => setFirstFocus(false)}
                                                 value={url}
                                                 onChange={(e) => setUrl(e.target.value)}
+                                                onKeyUp={(e)=>e.key==="Enter"?handleMeetingRequest():""}
                                                 required
                                             ></Input>
                                         </InputGroup>
