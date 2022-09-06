@@ -1,6 +1,11 @@
-import DarkFooter from "components/Footers/DarkFooter";
-import FinalNavbar from "components/Navbars/FinalNavbar";
+
 import { useEffect, useState } from "react";
+
+// Components
+import FinalNavbar from "components/Navbars/FinalNavbar";
+import DarkFooter from "components/Footers/DarkFooter";
+
+// Stylish Stuff
 import { Button, Col, Input, InputGroup, InputGroupAddon, InputGroupText, Row } from "reactstrap";
 
 const title = "Premium Quality Realtime Meetings, now available for free.";
@@ -39,7 +44,7 @@ function Meeting() {
             try {
                 // When full Http formatted url is provided
                 let subUrl = new URL(oriUrl).pathname;
-                
+
                 // Checks whether / is repeated more than twice
                 let iterator = subUrl.matchAll("/")
                 iterator.next();
@@ -47,13 +52,13 @@ function Meeting() {
                 const beforeSlashValid = iterator.next().done;
 
                 if (beforeSlashValid) {
-                    let filteredUrl = subUrl.slice(subUrl.indexOf("/",1));
+                    let filteredUrl = subUrl.slice(subUrl.indexOf("/", 1));
                     // Removes Final - (dashes)
                     if (filteredUrl.includes("-")) {
-                        filteredUrl = filteredUrl.replaceAll("-","");
+                        filteredUrl = filteredUrl.replaceAll("-", "");
                     }
                     // Final Check of Length
-                    if (filteredUrl.length===11) {
+                    if (filteredUrl.length === 11) {
                         // Success
                         return filteredUrl;
                     }
@@ -66,16 +71,16 @@ function Meeting() {
                 return "/"
             }
         } else {
-            
+
             // Removes Final - (dashes)
             if (oriUrl.includes("-")) {
-                oriUrl = oriUrl.replaceAll("-","");
+                oriUrl = oriUrl.replaceAll("-", "");
             }
 
             // Final Check of Length
-            if (oriUrl.length===10) {
+            if (oriUrl.length === 10) {
                 // Success
-                return "/"+oriUrl;
+                return "/" + oriUrl;
             }
             return "/";
         }
@@ -83,12 +88,12 @@ function Meeting() {
 
     const handleMeetingRequest = () => {
         if (url !== "") {
-            console.log(url,"\nurl:",filterUrl(url));
+            console.log(url, "\nurl:", filterUrl(url));
         } else {
             let randomString = Math.random().toString(36).substring(2, 12);
             // Adding - at 5th position
-            let newRoomId = randomString.slice(0,3)+"-"+randomString.slice(3,7)+"-"+randomString.slice(7);
-            
+            let newRoomId = randomString.slice(0, 3) + "-" + randomString.slice(3, 7) + "-" + randomString.slice(7);
+
             console.log(newRoomId);
         }
     }
@@ -118,10 +123,10 @@ function Meeting() {
                                             id="google-login"
                                             block
                                             className="btn-round d-flex justify-content-center"
-                                            color="primary" 
-                                            size="lg" 
+                                            color="primary"
+                                            size="lg"
                                             onClick={handleMeetingRequest}
-                                            >
+                                        >
                                             {url.length > 0 ? "Join" : "Host"}
                                         </Button>
                                     </Col>
