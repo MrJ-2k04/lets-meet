@@ -23,6 +23,7 @@ import TransparentFooter from "components/Footers/TransparentFooter.js";
 import FinalNavbar from "components/Navbars/FinalNavbar";
 import { Link } from "react-router-dom";
 import { useSignin } from "services/hooks/useSignin";
+import { useGoogleSignin } from "services/hooks/useGoogleSignin";
 
 function LoginPage() {
 
@@ -31,12 +32,13 @@ function LoginPage() {
 
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
-  const { signIn, signInWithGoogle, isLoading, error } = useSignin()
+  const { signIn, isLoading, error } = useSignin()
+  const { signInWithGoogle, isLoading: redirecting, error: googleErr } = useGoogleSignin();
 
   const handleLogin = (e) => {
     e.preventDefault()
     signIn(email, password);
-    if (error!==null) {
+    if (error !== null) {
       console.log(error);
     }
   }
@@ -44,7 +46,9 @@ function LoginPage() {
   useEffect(() => {
     document.body.classList.add("login-page");
     document.body.classList.add("sidebar-collapse");
-    document.documentElement.classList.remove("nav-open");
+    setTimeout(() => {
+      document.documentElement.classList.remove("nav-open");
+    }, 0);
     window.scrollTo(0, 0);
     document.body.scrollTop = 0;
 
@@ -139,15 +143,23 @@ function LoginPage() {
                       className="btn-round"
                       color="primary"
                       size="lg"
-                      disabled={isLoading}
+                      disabled={isLoading || redirecting}
                       type="submit"
                     >
                       {!isLoading && "Login"}
                       {isLoading && <Spinner size="sm" />}
                     </Button>
 
-                    <Button onClick={signInWithGoogle} id="google-login" block className="btn-round" color="primary" size="lg">
-                      Login with Google
+                    <Button onClick={signInWithGoogle}
+                      disabled={isLoading || redirecting}
+                      id="google-login"
+                      block
+                      className="btn-round"
+                      color="primary"
+                      size="lg"
+                    >
+                      {!redirecting && "Login with Google"}
+                      {redirecting && <Spinner size="sm" />}
                     </Button>
 
                     {/* Create Account */}

@@ -73,7 +73,7 @@ function FinalNavbar(props) {
                             Have a place to meet!
                         </UncontrolledTooltip>
                         <button
-                            className="navbar-toggler navbar-toggler"
+                            className={`navbar-toggler navbar-toggler ${collapseOpen?"toggled":""}`}
                             onClick={() => {
                                 document.documentElement.classList.toggle("nav-open");
                                 setCollapseOpen(!collapseOpen);

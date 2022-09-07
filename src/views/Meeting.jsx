@@ -20,7 +20,9 @@ function Meeting() {
     useEffect(() => {
         document.body.classList.add("meeting-page");
         document.body.classList.add("sidebar-collapse");
-        document.documentElement.classList.remove("nav-open");
+        setTimeout(() => {
+            document.documentElement.classList.remove("nav-open");
+        }, 0);
         window.scrollTo(0, 0);
         document.body.scrollTop = 0;
 
@@ -112,97 +114,138 @@ function Meeting() {
         }
     }
 
+    // Stylish Transition Variants
+    const componentVariants = {
+        hidden: {
+            opacity: 0
+        },
+        visible: {
+            opacity: 1,
+            transition: {
+                delay: 0.2,
+                duration: 0.6,
+                when: "beforeChildren",
+            }
+        },
+        exit: {
+            opacity: 0,
+            transition: { ease: "easeInOut" }
+        }
+    }
+    const childVariant = {
+        hidden: {
+            y: 50, opacity: 0
+        },
+        visible: {
+            y: 0, opacity: 1,
+            transition: { duration: 1.1 }
+        },
+        imageHidden: {
+            x: "-100vw"
+        },
+        imageVisible: {
+            x: 0,
+            transition: { delay: 1, type: "spring", stiffness: 50, }
+        }
+    }
+
     return (
         <>
             <FinalNavbar />
-            <div className="wrapper">
-                <div className="page-header">
+            <motion.div variants={componentVariants} initial="hidden" animate="visible" exit="exit">
+                <div className="wrapper">
+                    <div className="page-header">
 
-                    <div className="page-header-image" style={{
-                        backgroundImage: "url('https://wallpaperaccess.com/full/6663895.jpg')"
-                    }} />
-                    <div className="outer-container">
-                        <Row className="inner-container">
+                        <div className="page-header-image" style={{
+                            backgroundImage: "url(" + require("assets/img/pink_bg.jpg") + ")"
+                        }} />
+                        <div className="outer-container">
+                            <Row className="inner-container">
 
-                            {/* Text Section */}
-                            <Col md={{ size: 5, order: 2 }} className="url-container">
-                                <motion.h3
-                                    initial={{
-                                        y:-200
-                                    }}
-                                    animate={{
-                                        y:0
-                                    }}>
-                                    {title}
-                                </motion.h3>
-                                <p>{para}</p>
-                                {/* Input Controls */}
-                                <Row>
+                                {/* Text Section */}
+                                <Col md={{ size: 5, order: 2 }} className="url-container">
+                                    <motion.div variants={childVariant}>
+                                        <h3>
+                                            {title}
+                                        </h3>
+                                        <p>{para}</p>
+                                        {/* Input Controls */}
+                                        <Row>
 
-                                    {/* Host/Join Button */}
-                                    <Col xs="4">
-                                        <Button
-                                            id="google-login"
-                                            block
-                                            className="btn-round d-flex justify-content-center"
-                                            color="primary"
-                                            size="lg"
-                                            onClick={handleMeetingRequest}
-                                        >
-                                            {url.length > 0 ? "Join" : "Host"}
-                                        </Button>
-                                    </Col>
+                                            {/* Host/Join Button */}
+                                            <Col xs="4">
+                                                <motion.div
+                                                    whileHover={{ rotate: -5, scale: 1.05 }}
+                                                    transition={{ type: "spring", stiffness: 700 }}
+                                                >
+                                                    <Button
+                                                        id="google-login"
+                                                        block
+                                                        className="btn-round d-flex justify-content-center"
+                                                        color="primary"
+                                                        size="lg"
+                                                        onClick={handleMeetingRequest}
+                                                    >
+                                                        {url.length > 0 ? "Join" : "Host"}
+                                                    </Button>
+                                                </motion.div>
+                                            </Col>
 
-                                    {/* Url Input */}
-                                    <Col>
-                                        <InputGroup
-                                            className={
-                                                "no-border input-lg mt-2" +
-                                                (firstFocus ? " input-group-focus" : "")
-                                            }
-                                        >
-                                            <InputGroupAddon addonType="prepend">
-                                                <InputGroupText>
-                                                    <span className="material-icons">
-                                                        insert_link
-                                                    </span>
-                                                </InputGroupText>
-                                            </InputGroupAddon>
+                                            {/* Url Input */}
+                                            <Col>
+                                                <InputGroup
+                                                    className={
+                                                        "no-border input-lg mt-2" +
+                                                        (firstFocus ? " input-group-focus" : "")
+                                                    }
+                                                >
+                                                    <InputGroupAddon addonType="prepend">
+                                                        <InputGroupText>
+                                                            <span className="material-icons">
+                                                                insert_link
+                                                            </span>
+                                                        </InputGroupText>
+                                                    </InputGroupAddon>
 
-                                            <Input
-                                                placeholder="Meeting Code or URL"
-                                                type="text"
-                                                onFocus={() => setFirstFocus(true)}
-                                                onBlur={() => setFirstFocus(false)}
-                                                value={url}
-                                                onChange={(e) => setUrl(e.target.value)}
-                                                onKeyUp={(e) => e.key === "Enter" ? handleMeetingRequest() : ""}
-                                                required
-                                            ></Input>
-                                        </InputGroup>
-                                    </Col>
+                                                    <Input
+                                                        placeholder="Meeting Code or URL"
+                                                        type="text"
+                                                        onFocus={() => setFirstFocus(true)}
+                                                        onBlur={() => setFirstFocus(false)}
+                                                        value={url}
+                                                        onChange={(e) => setUrl(e.target.value)}
+                                                        onKeyUp={(e) => e.key === "Enter" ? handleMeetingRequest() : ""}
+                                                        required
+                                                    ></Input>
+                                                </InputGroup>
+                                            </Col>
 
-                                </Row>
-                            </Col>
+                                        </Row>
+                                    </motion.div>
+                                </Col>
 
-                            {/* Image Section */}
-                            <Col md={{ size: 7, order: 1 }}>
-                                <div className="meeting-image-container">
-                                    <img
-                                        className="meeting-image"
-                                        alt="..."
-                                        src={require("assets/img/meeting4.png")}
-                                    ></img>
-                                </div>
-                            </Col>
+                                {/* Image Section */}
+                                <Col md={{ size: 7, order: 1 }}>
+                                    <motion.div className="meeting-image-container"
+                                        variants={childVariant}
+                                        initial="imageHidden"
+                                        animate="imageVisible"
+                                    >
+                                        <img
+                                            className="meeting-image"
+                                            alt="..."
+                                            src={require("assets/img/meeting4.png")}
+                                        ></img>
+                                    </motion.div>
+                                </Col>
 
-                        </Row>
+                            </Row>
+                        </div>
+
                     </div>
-
+                    <DarkFooter />
                 </div>
-                <DarkFooter />
-            </div>
-
+            </motion.div>
         </>
     );
 }

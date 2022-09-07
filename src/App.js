@@ -1,6 +1,6 @@
 
 // Router
-import { BrowserRouter, Route, Routes, Navigate, Link } from "react-router-dom";
+import { Route, Routes, Navigate, Link, useLocation } from "react-router-dom";
 
 // Hooks
 import { useAuth } from "services/hooks/useAuth";
@@ -21,66 +21,61 @@ import ProfilePage from "views/examples/ProfilePage.js";
 import HomePage from "views/HomePage";
 import Meeting from "views/Meeting";
 import MeetingRoom from "views/MeetingRoom";
-import FourDotLoader from "components/Loaders/FourDotLoader";
+// import FourDotLoader from "components/Loaders/FourDotLoader";
 import Login from "views/Login";
+import { AnimatePresence } from "framer-motion";
 // import OneTapLogin from "services/hooks/OneTapLogin";
 
 function App() {
 
-    const { authIsReady, user } = useAuth()
+    const location = useLocation();
+    const { user } = useAuth()
 
     return (
-        <div className="App">
-            {/* <OneTapLogin /> */}
-            {authIsReady &&
-                <BrowserRouter>
-                    <Routes>
-                        <Route path="/" element={<HomePage />} />
+        <AnimatePresence mode="wait">
+            <Routes location={location} key={location.key}>
+                <Route path="/" element={<HomePage />} />
 
-                        <Route path="/index" element={<Index />} />
-                        <Route
-                            path="/nucleo-icons"
-                            element={<NucleoIcons />}
-                        />
+                <Route path="/index" element={<Index />} />
+                <Route
+                    path="/nucleo-icons"
+                    element={<NucleoIcons />}
+                />
 
-                        <Route path='/login' element={
-                            <>
-                                {!user && <Login />}
-                                {user && <Navigate replace to="/" />}
-                            </>
-                        } />
-                        <Route path='/signup' element={
-                            <>
-                                {!user && <SignUp />}
-                                {user && <Navigate replace to="/" />}
-                            </>
-                        } />
+                <Route path='/login' element={
+                    <>
+                        {!user && <Login />}
+                        {user && <Navigate replace to="/" />}
+                    </>
+                } />
+                <Route path='/signup' element={
+                    <>
+                        {!user && <SignUp />}
+                        {user && <Navigate replace to="/" />}
+                    </>
+                } />
 
-                        <Route path='/profile' element={
-                            <>
-                                {user && <ProfilePage />}
-                                {!user && <Navigate replace to="/login" />}
-                            </>
-                        } />
-                        <Route path='/meeting' element={
-                            <>
-                                {user && <Meeting />}
-                                {!user && <Navigate replace to="/login" />}
-                            </>
-                        } />
-                        <Route path='/meeting/:roomid' element={<>
-                            {user && <MeetingRoom />}
-                            {!user && <Navigate replace to="/login" />}
-                        </>} />
+                <Route path='/profile' element={
+                    <>
+                        {user && <ProfilePage />}
+                        {!user && <Navigate replace to="/login" />}
+                    </>
+                } />
+                <Route path='/meeting' element={
+                    <>
+                        {user && <Meeting />}
+                        {!user && <Navigate replace to="/login" />}
+                    </>
+                } />
+                <Route path='/meeting/:roomid' element={<>
+                    {user && <MeetingRoom />}
+                    {!user && <Navigate replace to="/login" />}
+                </>} />
 
-                        <Route path="*" element={<>404 Not Found <Link to="/">Home</Link></>} />
+                <Route path="*" element={<>404 Not Found <Link to="/">Home</Link></>} />
 
-                    </Routes>
-
-                </BrowserRouter>
-            }
-            {!authIsReady && <FourDotLoader />}
-        </div>
+            </Routes>
+        </AnimatePresence>
     );
 }
 
