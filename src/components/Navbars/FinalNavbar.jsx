@@ -3,6 +3,12 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
+
+// Hooks
+import { useAuth } from "services/hooks/useAuth";
+import { useSignout } from "services/hooks/useSignout";
+
+// Stylish Stuff
 import {
     Button,
     Collapse,
@@ -18,15 +24,22 @@ import {
     Container,
     UncontrolledTooltip,
 } from "reactstrap";
+import {motion} from "framer-motion"
 
-// Hooks
-import { useAuth } from "services/hooks/useAuth";
-import { useSignout } from "services/hooks/useSignout";
-
+const logoVariants = {
+    hover:{
+        scale:1.1,
+        transition: {type:"spring", ease: "easeInOut"}
+    },
+    click:{
+        scale:0.85,
+        transition: {type:"spring", ease: "easeInOut", duration: 0.1}
+    }
+}
 
 function FinalNavbar(props) {
 
-    const [navbarColor, setNavbarColor] = useState(props.color===undefined?"navbar-transparent":props.color);
+    const [navbarColor, setNavbarColor] = useState(props.color === undefined ? "navbar-transparent" : props.color);
     const [collapseOpen, setCollapseOpen] = useState(false);
     const { user } = useAuth();
     const { signUserOut } = useSignout()
@@ -42,7 +55,7 @@ function FinalNavbar(props) {
                 document.documentElement.scrollTop < 400 ||
                 document.body.scrollTop < 400
             ) {
-                setNavbarColor(props.color===undefined?"navbar-transparent":props.color);
+                setNavbarColor(props.color === undefined ? "navbar-transparent" : props.color);
             }
         };
         window.addEventListener("scroll", updateNavbarColor);
@@ -62,18 +75,25 @@ function FinalNavbar(props) {
                     }}
                 />
             ) : null}
-            <Navbar className={"fixed-top " + navbarColor} expand="lg" color={props.color===undefined?"primary":props.color}>
+            <Navbar className={"fixed-top " + navbarColor} expand="lg" color={props.color === undefined ? "primary" : props.color}>
                 <Container>
-
                     <div className="navbar-translate">
                         <NavbarBrand to="/" id="navbar-brand" tag={Link}>
-                            LetsMeet
+                            <motion.img
+                                src={require("assets/img/logo_white_circle.png")}
+                                alt="Logo"
+                                className="logo" 
+                                variants={logoVariants}
+                                animate="visible"
+                                whileHover="hover"
+                                whileTap="click" />
+                            {/* LetsMeet */}
                         </NavbarBrand>
-                        <UncontrolledTooltip target="#navbar-brand">
+                        {/* <UncontrolledTooltip target="#navbar-brand">
                             Have a place to meet!
-                        </UncontrolledTooltip>
+                        </UncontrolledTooltip> */}
                         <button
-                            className={`navbar-toggler navbar-toggler ${collapseOpen?"toggled":""}`}
+                            className={`navbar-toggler navbar-toggler ${collapseOpen ? "toggled" : ""}`}
                             onClick={() => {
                                 document.documentElement.classList.toggle("nav-open");
                                 setCollapseOpen(!collapseOpen);

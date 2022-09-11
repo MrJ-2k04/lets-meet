@@ -8,9 +8,10 @@ import IndexHeader from "components/Headers/IndexHeader";
 import FinalNavbar from "components/Navbars/FinalNavbar";
 
 // Stylish Stuff
-import {motion} from "framer-motion"
+import { motion } from "framer-motion"
 
-function HomePage() {
+function HomePage({test}) {
+
 
     useEffect(() => {
         document.body.classList.add("index-page");
@@ -20,19 +21,20 @@ function HomePage() {
         }, 0);
         window.scrollTo(0, 0);
         document.body.scrollTop = 0;
-        return function cleanup() {
+        return ()=> {
             document.body.classList.remove("index-page");
             document.body.classList.remove("sidebar-collapse");
         };
-    });
+    }, []);
 
     const componentVariants = {
-        hidden:{
-            opacity:0
+        hidden: {
+            opacity: 0
         },
-        visible:{
-            opacity:1,
-            transition:{ delay:0.2, duration: 1.2 }
+        visible: {
+            opacity: 1,
+            x: 0,
+            transition: { delay: 0.2, duration: 1.2 }
         },
         exit:{
             x:"-150vw",
@@ -43,7 +45,7 @@ function HomePage() {
     return (
         <>
             <FinalNavbar />
-            <motion.div variants={componentVariants} initial="hidden" animate="visible" exit="exit" >
+            <motion.div variants={componentVariants} animate="visible" initial="hidden" exit="exit">
                 <div className="wrapper">
                     <IndexHeader />
                     <div className="main">

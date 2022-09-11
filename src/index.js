@@ -10,7 +10,7 @@ import { AuthContextProvider } from 'services/context/AuthContext';
 // Hooks
 import { useAuth } from "services/hooks/useAuth";
 // Components
-import FourDotLoader from "components/Loaders/FourDotLoader";
+import FourDotLoader from "components/Extras/FourDotLoader";
 
 
 const root = ReactDOM.createRoot(document.getElementById("root"));

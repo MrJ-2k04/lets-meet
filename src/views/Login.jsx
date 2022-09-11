@@ -15,7 +15,8 @@ import {
   InputGroup,
   Container,
   Col,
-  Spinner
+  Spinner,
+  Row
 } from "reactstrap";
 
 // core components
@@ -24,6 +25,7 @@ import FinalNavbar from "components/Navbars/FinalNavbar";
 import { Link } from "react-router-dom";
 import { useSignin } from "services/hooks/useSignin";
 import { useGoogleSignin } from "services/hooks/useGoogleSignin";
+import GoogleButton from "components/Extras/GoogleButton";
 
 function LoginPage() {
 
@@ -150,7 +152,15 @@ function LoginPage() {
                       {isLoading && <Spinner size="sm" />}
                     </Button>
 
-                    <Button onClick={signInWithGoogle}
+
+                    <GoogleButton
+                      loading={redirecting}
+                      onClick={signInWithGoogle}
+                      text="Continue with Google"
+                    />
+
+
+                    {/* <Button onClick={signInWithGoogle}
                       disabled={isLoading || redirecting}
                       id="google-login"
                       block
@@ -158,9 +168,9 @@ function LoginPage() {
                       color="primary"
                       size="lg"
                     >
-                      {!redirecting && "Login with Google"}
-                      {redirecting && <Spinner size="sm" />}
-                    </Button>
+                      {/* {!redirecting && "Login with Google"}
+                      {redirecting && <Spinner size="sm" />} 
+                    </Button> */}
 
                     {/* Create Account */}
                     <div className="pull-left">

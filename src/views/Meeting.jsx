@@ -1,5 +1,6 @@
 
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 // Components
 import FinalNavbar from "components/Navbars/FinalNavbar";
@@ -12,10 +13,46 @@ import { motion } from "framer-motion";
 const title = "Premium Quality Realtime Meetings, now available for free.";
 const para = "Letsmeet is developed using highly Secured Realtime Communication Service. No unauthorized person can access your personal meeting."
 
+// Stylish Transition Variants
+const componentVariants = {
+    hidden: {
+        opacity: 0
+    },
+    visible: {
+        opacity: 1,
+        transition: {
+            delay: 0.2,
+            duration: 0.6,
+            when: "beforeChildren",
+        }
+    },
+    exit: {
+        opacity: 0,
+        transition: { ease: "easeInOut" }
+    }
+}
+const childVariant = {
+    hidden: {
+        y: 50, opacity: 0
+    },
+    visible: {
+        y: 0, opacity: 1,
+        transition: { duration: 1.1 }
+    },
+    imageHidden: {
+        x: "-100vw"
+    },
+    imageVisible: {
+        x: 0,
+        transition: { delay: 1, type: "spring", stiffness: 50, }
+    }
+}
+
 function Meeting() {
 
     const [firstFocus, setFirstFocus] = useState(false);
     const [url, setUrl] = useState("");
+    const nav = useNavigate();
 
     useEffect(() => {
         document.body.classList.add("meeting-page");
@@ -32,8 +69,7 @@ function Meeting() {
         };
     }, []);
 
-
-
+    // Meeting Code Logic
     const getValidRoomCode = (oriUrl) => {
 
         const getDashes = (roomCode) => {
@@ -95,13 +131,11 @@ function Meeting() {
         console.log("finally part of getRoomCode");
         return "/";
     }
-
-
     const handleMeetingRequest = () => {
         if (url !== "") {
             const roomCode = getValidRoomCode(url)
             if (roomCode !== "/") {
-                console.log(roomCode);
+                nav(`/meeting/${roomCode}`);
             } else {
                 console.log("Invalid Code");
             }
@@ -109,46 +143,11 @@ function Meeting() {
             let randomString = Math.random().toString(36).substring(2, 12);
             // Adding - at 4th and 8th position "aaa-aaaa-aaa"
             let newRoomId = randomString.slice(0, 3) + "-" + randomString.slice(3, 7) + "-" + randomString.slice(7);
-
-            console.log(newRoomId);
+            // Redirect user to that page
+            nav(`/meeting/${newRoomId}`);
         }
     }
-
-    // Stylish Transition Variants
-    const componentVariants = {
-        hidden: {
-            opacity: 0
-        },
-        visible: {
-            opacity: 1,
-            transition: {
-                delay: 0.2,
-                duration: 0.6,
-                when: "beforeChildren",
-            }
-        },
-        exit: {
-            opacity: 0,
-            transition: { ease: "easeInOut" }
-        }
-    }
-    const childVariant = {
-        hidden: {
-            y: 50, opacity: 0
-        },
-        visible: {
-            y: 0, opacity: 1,
-            transition: { duration: 1.1 }
-        },
-        imageHidden: {
-            x: "-100vw"
-        },
-        imageVisible: {
-            x: 0,
-            transition: { delay: 1, type: "spring", stiffness: 50, }
-        }
-    }
-
+    
     return (
         <>
             <FinalNavbar />
