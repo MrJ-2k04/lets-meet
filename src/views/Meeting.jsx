@@ -230,11 +230,14 @@ function Meeting() {
                                         initial="imageHidden"
                                         animate="imageVisible"
                                     >
-                                        <img
+                                        <motion.img
                                             className="meeting-image"
                                             alt="..."
                                             src={require("assets/img/meeting4.png")}
-                                        ></img>
+                                            drag
+                                            dragConstraints={{left:0,right:0,bottom:0,top:0}}
+                                            
+                                        ></motion.img>
                                     </motion.div>
                                 </Col>
 

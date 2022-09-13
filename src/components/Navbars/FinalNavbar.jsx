@@ -28,13 +28,14 @@ import {motion} from "framer-motion"
 
 const logoVariants = {
     hover:{
-        scale:1.1,
-        transition: {type:"spring", ease: "easeInOut"}
+        scale:1.15,
+        // transition: {type:"spring", ease: "easeInOut"}
     },
     click:{
-        scale:0.85,
-        transition: {type:"spring", ease: "easeInOut", duration: 0.1}
-    }
+        scale:0.8,
+        transition: { duration: 0.1}
+    },
+    
 }
 
 function FinalNavbar(props) {
@@ -84,9 +85,9 @@ function FinalNavbar(props) {
                                 alt="Logo"
                                 className="logo" 
                                 variants={logoVariants}
-                                animate="visible"
                                 whileHover="hover"
-                                whileTap="click" />
+                                whileTap="click"
+                                transition={{type: "spring", stiffness: 400, damping: 17}} />
                             {/* LetsMeet */}
                         </NavbarBrand>
                         {/* <UncontrolledTooltip target="#navbar-brand">
