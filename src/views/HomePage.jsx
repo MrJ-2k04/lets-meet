@@ -44,7 +44,7 @@ function HomePage({test}) {
 
     return (
         <>
-            <FinalNavbar />
+            <FinalNavbar sticky />
             <motion.div variants={componentVariants} animate="visible" initial="hidden" exit="exit">
                 <div className="wrapper">
                     <IndexHeader />

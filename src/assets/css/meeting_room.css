@@ -1,5 +1,5 @@
-.video-preview{
-    border:2px dotted white; 
+.video-preview {
+    border: 2px dotted white;
     width: 100%;
     max-width: 700px;
     object-fit: cover;
@@ -8,7 +8,8 @@
     min-height: 420px;
     /* max-width: 600px; */
 }
-.over-video{
+
+.over-video {
     margin-top: -4.85rem;
     position: relative;
 
@@ -16,7 +17,8 @@
     justify-content: center;
     align-items: flex-end;
 }
-.icon-btn{
+
+.icon-btn {
     border-radius: 50% !important;
     /* padding: 10px 14px 8px; */
     height: 50px;
@@ -26,4 +28,63 @@
     justify-content: center;
     align-items: center;
     flex-direction: row;
+}
+
+.img-bg {
+    background-repeat: round;
+    background-size: "cover";
+}
+
+/* In Meeting Css */
+.my-container {
+    height: calc(100vh - 70px);
+    width: 100vw;
+    max-width: 100vw;
+    max-height: 100vh;
+
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
+.flex-container {
+    height: calc(100% - 150px);
+    width: 100%;
+    /* margin: 0 auto; */
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+}
+
+.float-bottom {
+    z-index: 2;
+    position: fixed;
+    bottom: 0px;
+    width: 100%;
+    height: auto;
+
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-content: center;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.btn-container {
+    display: flex;
+    flex-direction: row;
+    align-content: center;
+    justify-content: center;
+    align-items: center;
+}
+
+.end-call-btn {
+    color: red !important;
+    background-color: #dadada !important;
+}
+
+.end-call-btn:hover {
+    background-color: #bebebe !important;
 }

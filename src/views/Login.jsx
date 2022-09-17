@@ -63,7 +63,7 @@ function LoginPage() {
 
   return (
     <>
-      <FinalNavbar />
+      <FinalNavbar sticky />
       <div className="page-header clear-filter" filter-color="blue">
         <div
           className="page-header-image"

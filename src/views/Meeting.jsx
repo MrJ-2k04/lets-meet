@@ -147,18 +147,20 @@ function Meeting() {
             nav(`/meeting/${newRoomId}`);
         }
     }
-    
+
     return (
-        <>
+        <div className="img-bg" style={{backgroundImage: "url(" + require("assets/img/pink_bg.jpg") + ")"}}>
             <FinalNavbar />
-            <motion.div variants={componentVariants} initial="hidden" animate="visible" exit="exit">
-                <div className="wrapper">
+            <motion.div variants={componentVariants} initial="hidden" animate="visible" exit="exit"
+            >
+
+                <div className="wrapper" >
                     <div className="page-header">
 
-                        <div className="page-header-image" style={{
+                        {/* <div className="page-header-image" style={{
                             backgroundImage: "url(" + require("assets/img/pink_bg.jpg") + ")"
-                        }} />
-                        <div className="outer-container">
+                        }} /> */}
+                        <div className="outer-container mt-0">
                             <Row className="inner-container">
 
                                 {/* Text Section */}
@@ -235,8 +237,9 @@ function Meeting() {
                                             alt="..."
                                             src={require("assets/img/meeting4.png")}
                                             drag
-                                            dragConstraints={{left:0,right:0,bottom:0,top:0}}
-                                            
+                                            dragConstraints={{ left: 0, right: 0, bottom: 0, top: 0 }}
+                                            dragElastic={0.1}
+
                                         ></motion.img>
                                     </motion.div>
                                 </Col>
@@ -248,7 +251,7 @@ function Meeting() {
                     <DarkFooter />
                 </div>
             </motion.div>
-        </>
+        </div>
     );
 }
 

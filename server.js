@@ -6,14 +6,25 @@ const server = require("http").createServer(app)
 app.set("port", 3030)
 
 var connections = {}
+var hosts = {}
 
 // Allows Cross Origin
 const corsOptions = {
-    origin: ["http://localhost:3000","https://localhost:3000"]
+    origin: "*"
+    // origin: ["http://localhost:3000","https://localhost:3000"]
 }
 // Creating IO using Custom CORS Policy
 const io = require("socket.io")(server, { cors: corsOptions })
 
+app.use((req,res,next)=>{
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    next();
+})
+
+app.get("/status",(req,res)=>{
+    console.log(req.url);
+    res.json({name:"MrJ"})
+})
 
 io.on("connection", (socket) => {
 
@@ -22,11 +33,13 @@ io.on("connection", (socket) => {
         io.to(toUser).emit("signal",socket.id,msg);
     })
 
-    socket.on("user-joined", (path) => {
-        // Add to Server Table
+    socket.on("user-joined", (path,uid) => {
+        // Add New Room to Server Connections List
         if (connections[path] === undefined) {
             connections[path] = [];
+            hosts[path]=uid;
         }
+        console.log(hosts);
         connections[path].push(socket.id);
 
         // Inform all other users in Room about New Member
@@ -40,10 +53,10 @@ io.on("connection", (socket) => {
 
     socket.on("disconnect", () => {
         // Loop Through all Rooms
-        for (const [path, room] of Object.entries(connections)) {
+        for (let [path, room] of Object.entries(connections)) {
             // Loop through all Users in Each Room
-            room.forEach((userId,idx) => {
-                if(userId === socket.id){
+            room.forEach((userSocket,idx) => {
+                if(userSocket === socket.id){
 
                     // Removing Socket id from list
                     room.splice(idx,1);
@@ -73,6 +86,7 @@ io.on("connection", (socket) => {
     })
 
 }) // end io connect
+
 
 
 // Starting the Server

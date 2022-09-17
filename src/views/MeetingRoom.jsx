@@ -5,23 +5,27 @@ import { useEffect, useRef, useState } from 'react';
 // Components
 import FinalNavbar from 'components/Navbars/FinalNavbar';
 import DarkFooter from 'components/Footers/DarkFooter';
+import FourDotLoader from 'components/Extras/FourDotLoader';
 
 // Stylish stuff
 import { motion } from "framer-motion"
-import { Button, Col, Row } from 'reactstrap';
+import { Button, Col, Input, Row } from 'reactstrap';
 
 // Socket
 import { io } from "socket.io-client"
+import { useAuth } from 'services/hooks/useAuth';
+
 const peerConnectionConfig = {
     'iceServers': [
         // { 'urls': 'stun:stun.services.mozilla.com' },
         { 'urls': 'stun:stun.l.google.com:19302' },
     ]
 }
-const server_url = "http://localhost:3030";
+// const server_url = "http://localhost:3030";
+const server_url = "https://api.1tapboosting.in";
 var connections = {};
-var socket = null;
-var socketId = null;
+// var socket = null;
+// var socketId = null;
 var elms = 0;
 
 
@@ -38,16 +42,21 @@ const componentVariants = {
 function MeetingRoom() {
 
     const [inMeeting, setInMeeting] = useState(false);
+    const [isChecking, setIsChecking] = useState(false);
 
     // Multimedia Stuff
     const [video, setVideo] = useState(false);
     const [audio, setAudio] = useState(false);
+    const [messages, setMessages] = useState([]);
     const [screenAvailable, setScreenAvailable] = useState(false);
     const [gettingPermission, setGettingPermission] = useState(false);
+    const { user } = useAuth()
     // Refs (stateless)
     let videoAvailable = useRef(false);
     let audioAvailable = useRef(false);
     let myVidRef = useRef();
+    let socket = useRef(null);
+    let socketId = useRef();
 
     const init = () => {
         document.body.classList.add("meeting-room-page");
@@ -73,6 +82,10 @@ function MeetingRoom() {
             )
         )
         return function cleanup() {
+            if (socket !== null && socket.current !== undefined && socket.current !== null) {
+                socket.current.disconnect();
+                socket = null;
+            }
             document.body.classList.remove("meeting-page");
             document.body.classList.remove("sidebar-collapse");
         };
@@ -132,19 +145,7 @@ function MeetingRoom() {
         window.localStream = stream
         myVidRef.current.srcObject = stream
 
-        // for (let id in connections) {
-        // 	if (id === socketId) continue
 
-        // 	connections[id].addStream(window.localStream)
-
-        // 	connections[id].createOffer().then((description) => {
-        // 		connections[id].setLocalDescription(description)
-        // 			.then(() => {
-        // 				socket.emit('signal', id, JSON.stringify({ 'sdp': connections[id].localDescription }))
-        // 			})
-        // 			.catch(e => console.log(e))
-        // 	})
-        // }
         updateSocketMediastream(window.localStream);
 
         stream.getTracks().forEach(track => track.onended = () => {
@@ -164,7 +165,7 @@ function MeetingRoom() {
                     connections[id].createOffer().then((description) => {
                         connections[id].setLocalDescription(description)
                             .then(() => {
-                                socket.emit('signal', id, JSON.stringify({ 'sdp': connections[id].localDescription }))
+                                socket.current.emit('signal', id, JSON.stringify({ 'sdp': connections[id].localDescription }))
                             })
                             .catch(e => console.log(e))
                     })
@@ -193,14 +194,14 @@ function MeetingRoom() {
     // Signaling Service to Power WebRTC
     const gotSignal = (from, msg) => {
         let signal = JSON.parse(msg);
-        if (from !== socketId) {
+        if (from !== socketId.current) {
             if (signal.sdp) {
                 connections[from].setRemoteDescription(new RTCSessionDescription(signal.sdp))
                     .then(() => {
                         if (signal.sdp.type === "offer") {
                             connections[from].createAnswer()
                                 .then(description => connections[from].setLocalDescription(description)
-                                    .then(() => socket.emit("signal", from, JSON.stringify({ "sdp": description })))
+                                    .then(() => socket.current.emit("signal", from, JSON.stringify({ "sdp": description })))
                                     .catch(er => console.log(er)))
                                 .catch(er => console.log(er))
                         }
@@ -214,20 +215,24 @@ function MeetingRoom() {
         }
     }
 
+
     const connectToSocketServer = () => {
 
-        setInMeeting(true);
-        socket = io.connect(server_url, { secure: true })
+        socket.current = io.connect(server_url, { secure: true, reconnection: false })
 
-        socket.on('signal', gotSignal)
+        socket.current.on('signal', gotSignal)
 
-        socket.on('connect', () => {
-            socket.emit('user-joined', window.location.href)
-            socketId = socket.id
+        socket.current.on('connect', () => {
+            // Stops Loading Screen and Starts Meeting
+            setInMeeting(true);
+            setIsChecking(false);
 
-            // socket.on('chat-message', this.addMessage)
+            socket.current.emit('user-joined', window.location.href, user.uid);
+            socketId.current = socket.current.id
 
-            socket.on('user-left', (id) => {
+            // socket.on('chat-message', addMessage)
+
+            socket.current.on('user-left', (id) => {
                 let video = document.querySelector(`[data-socket="${id}"]`)
                 if (video !== null) {
                     elms--
@@ -239,13 +244,13 @@ function MeetingRoom() {
             })
 
             // Very very imp to understand b4 going any further!!
-            socket.on('user-joined', (id, clients) => {
+            socket.current.on('user-joined', (id, clients) => {
                 clients.forEach((socketListId) => {
                     connections[socketListId] = new RTCPeerConnection(peerConnectionConfig)
                     // Wait for their ice candidate
                     connections[socketListId].onicecandidate = function (event) {
                         if (event.candidate != null) {
-                            socket.emit('signal', socketListId, JSON.stringify({ 'ice': event.candidate }))
+                            socket.current.emit('signal', socketListId, JSON.stringify({ 'ice': event.candidate }))
                         }
                     }
 
@@ -289,28 +294,34 @@ function MeetingRoom() {
                     }
                 })
 
-                if (id === socketId) {
+                if (id === socketId.current) {
                     updateSocketMediastream(window.localStream);
                 }
             })
         })
+
+        socket.current.on("error", () => {
+            setIsChecking(false);
+        })
     }
 
     const updateSocketMediastream = (stream) => {
-        for (let other in connections) {
-            // Ignore own id
-            if (other === socket.id) continue;
+        if (socket !== null && socket.current !== null) {
+            for (let other in connections) {
+                // Ignore own id
+                if (other === socket.current.id) continue;
 
-            // Add our stream to their feed
-            try {
-                connections[other].addStream(stream)
-            } catch (error) { }
+                // Add our stream to their feed
+                try {
+                    connections[other].addStream(stream)
+                } catch (error) { }
 
-            // Send the added stream via signaling
-            connections.current[other].createOffer()
-                .then(description => connections.current[other].setLocalDescription(description)
-                    .then(() => socket.emit("signal", other, JSON.stringify({ "sdp": description }))
-                    ))
+                // Send the added stream via signaling
+                connections[other].createOffer()
+                    .then(description => connections[other].setLocalDescription(description)
+                        .then(() => socket.current.emit("signal", other, JSON.stringify({ "sdp": description }))
+                        ))
+            }
         }
     }
 
@@ -348,63 +359,181 @@ function MeetingRoom() {
         return { minWidth, minHeight, width, height }
     }
 
+    const copyUrl = () => {
+        let text = window.location.href
+        if (!navigator.clipboard) {
+            let textArea = document.createElement("textarea")
+            textArea.value = text
+            document.body.appendChild(textArea)
+            textArea.focus()
+            textArea.select()
+            try {
+                document.execCommand('copy')
+                alert("Link copied to Clipboard!");
+                // message.success("Link copied to clipboard!")
+            } catch (err) {
+                alert("Failed to copy");
+                // message.error("Failed to copy")
+            }
+            document.body.removeChild(textArea)
+            return
+        }
+        navigator.clipboard.writeText(text).then(function () {
+            alert("Link copied to Clipboard!");
+            // message.success("Link copied to clipboard!")
+        }, () => {
+            alert("Failed to copy");
+            // message.error("Failed to copy")
+        })
+    }
+
+    // Checks server status, thereafter makes callback
+    const checkServerStatus = () => {
+        return new Promise(resolve => {
+            setIsChecking(true);
+            fetch(server_url + "/status").then(res => {
+                if (res.status === 200) {
+                    // Resolves promise to continue with .then stuff in caller
+                    resolve();
+                }
+            }).catch(err => {
+                setIsChecking(false);
+                // Alerts user that the backend server is unavailable
+                alert("Cannot connect to server due to network issue!");
+            })
+        })
+    }
+
     const toggleVideo = () => setVideo(!video);
     const toggleAudio = () => setAudio(!audio);
+    // Main Starting Point for Connection
     const connect = () => {
-        setVideo(videoAvailable,
-            setAudio(audioAvailable, connectToSocketServer())
-        )
+        checkServerStatus().then(() => {
+            connectToSocketServer()
+            // setVideo(videoAvailable,
+            //     setAudio(audioAvailable, connectToSocketServer())
+            // )
+        })
     }
 
     useEffect(updateUserMedia, [video, audio]);
+    useEffect(!isChecking ? updateUserMedia : () => { }, [isChecking]);
 
-    return (
-        <>
-            {inMeeting && <FinalNavbar />}
-            <motion.div
-                variants={componentVariants} initial="hidden"
-                animate="visible"
-            >
-                <div className="wrapper">
-                    <div className="page-header">
-                        <div className="outer-container">
-                            <Row className='inner-container'>
-                                <Col xs={{ size: 12, order: 2 }} lg={{ size: 7, order: 1 }}>
-                                    <video autoPlay className='video-preview' ref={myVidRef}></video>
-                                    <div className="over-video">
-                                        <Button onClick={toggleAudio} className='icon-btn mr-4' color='primary'>
-                                            <span className="material-icons">{audio ? "mic" : "mic_off"}</span>
-                                        </Button>
-                                        <Button onClick={toggleVideo} className='icon-btn ml-4' color='primary'>
-                                            <span className="material-icons">{video ? "videocam" : "videocam_off"}</span>
-                                        </Button>
-                                    </div>
-                                </Col>
-                                <Col lg={{ size: 5, order: 2 }}>
-                                    <Row>
-                                        <Col xs="12">
-                                            <h2>Ready to join?</h2>
-                                        </Col>
-                                        <Col>
-                                            <Button
-                                                block
-                                                className='btn-round'
-                                                color='primary'
-                                                size='lg'
-                                                style={{ maxWidth: "50%", margin: "0 auto" }}
-                                                onClick={connect}
-                                            >Join</Button>
-                                        </Col>
-                                    </Row>
-                                </Col>
-                            </Row>
+    return (<>
+        {!isChecking && <div className='img-bg'
+        // style={{ backgroundImage: "url(" + require("assets/img/meetingroom_bg.jpg") + ")" }}
+        >
+            {!inMeeting &&
+                <motion.div
+                    variants={componentVariants} initial="hidden"
+                    animate="visible"
+                >
+                    <FinalNavbar />
+                    <div className="wrapper">
+                        <div className="page-header">
+                            <div className="outer-container mt-0">
+                                <Row className='inner-container'>
+                                    <Col xs={{ size: 12, order: 2 }} lg={{ size: 7, order: 1 }}>
+                                        <video autoPlay muted className='video-preview' ref={myVidRef}></video>
+                                        <div className="over-video">
+                                            <Button onClick={toggleAudio} className='icon-btn mr-4' color='primary'>
+                                                <span className="material-icons">{audio ? "mic" : "mic_off"}</span>
+                                            </Button>
+                                            <Button onClick={toggleVideo} className='icon-btn ml-4' color='primary'>
+                                                <span className="material-icons">{video ? "videocam" : "videocam_off"}</span>
+                                            </Button>
+                                        </div>
+                                    </Col>
+                                    <Col lg={{ size: 5, order: 2 }}>
+                                        <Row>
+                                            <Col xs="12">
+                                                <h2>Ready to join?</h2>
+                                            </Col>
+                                            <Col>
+                                                <Button
+                                                    block
+                                                    className='btn-round'
+                                                    color='primary'
+                                                    size='lg'
+                                                    style={{ maxWidth: "50%", margin: "0 auto" }}
+                                                    onClick={connect}
+                                                >Join</Button>
+                                            </Col>
+                                        </Row>
+                                    </Col>
+                                </Row>
 
+                            </div>
+                        </div>
+                        <DarkFooter />
+                    </div>
+                </motion.div>}
+            {inMeeting &&
+                <motion.div
+                    variants={componentVariants} initial="hidden"
+                    animate="visible"
+                >
+                    <div className="float-bottom" style={{ backgroundColor: "rgb(0 0 0 / 16%)" }}>
+                        <div className="left-container">
+                            <h5>{new Date().getHours() + ":" + new Date().getMinutes()}
+                                &nbsp; | {window.location.href.toString().slice(-12)}
+                                &nbsp;
+                                <span className="copy-btn icon material-icons">content_copy</span>
+                            </h5>
+                        </div>
+                        <div className="btn-container">
+                            <Button className='icon-btn mr-2' onClick={toggleVideo} color="primary">
+                                <span className="material-icons">{video ? "videocam" : "videocam_off"}</span>
+                            </Button>
+
+                            <Button className='icon-btn mr-2 ml-2' onClick={toggleAudio} color="primary">
+                                <span className="material-icons">{audio ? "mic" : "mic_off"}</span>
+                            </Button>
+
+                            {screenAvailable === true ?
+                                <Button className='icon-btn ml-2' color="primary" onClick={() => { }}>
+                                    <span className="material-icons">screen_share</span>
+                                    {/* {this.state.screen === true ? <ScreenShareIcon /> : <StopScreenShareIcon />} */}
+                                </Button>
+                                : null}
+
+                            <Button className='end-call-btn icon-btn mr-2 ml-2' onClick={() => { }}>
+                                <span className="material-icons">call_end</span>
+                            </Button>
+
+                            {/* <Badge badgeContent={this.state.newmessages} max={999} color="secondary" onClick={this.openChat}>
+                                <IconButton style={{ color: "#424242" }} onClick={this.openChat}>
+                                    <ChatIcon />
+                                </IconButton>
+                            </Badge> */}
+                        </div>
+                        <div className="right-container">
+                            <h4></h4>
                         </div>
                     </div>
-                    <DarkFooter />
-                </div>
-            </motion.div>
-        </>
+                    <div className="my-container">
+                        <div style={{ paddingTop: "20px" }}>
+                            <Input value={window.location.href} onChange={() => { }} disable="true" hidden></Input>
+                            <Button style={{
+                                backgroundColor: "#3f51b5", color: "whitesmoke", marginLeft: "20px",
+                                marginTop: "10px", width: "120px", fontSize: "10px"
+                            }} onClick={copyUrl}>Copy invite link</Button>
+                        </div>
+                        <Row id="main" className="flex-container" style={{ margin: 0, padding: 0 }}>
+                            <video id="my-video" ref={myVidRef} autoPlay muted style={{
+                                borderStyle: "solid", borderColor: "#bdbdbd", margin: "10px", objectFit: "fill",
+                                width: "100%", height: "100%"
+                            }}></video>
+                        </Row>
+                    </div>
+
+                </motion.div>
+            }
+        </div>}
+        {isChecking && <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+            <FourDotLoader />
+        </motion.div>}
+    </>
     );
 }
 

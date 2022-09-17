@@ -76,7 +76,7 @@ function FinalNavbar(props) {
                     }}
                 />
             ) : null}
-            <Navbar className={"fixed-top " + navbarColor} expand="lg" color={props.color === undefined ? "primary" : props.color}>
+            <Navbar className={(props.sticky===undefined?"":"fixed-top ") + navbarColor} expand="lg" color={props.color === undefined ? "primary" : props.color}>
                 <Container>
                     <div className="navbar-translate">
                         <NavbarBrand to="/" id="navbar-brand" tag={Link}>

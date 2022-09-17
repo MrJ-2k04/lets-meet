@@ -35,7 +35,7 @@ function ProfilePage() {
   }, []);
   return (
     <>
-      <FinalNavbar />
+      <FinalNavbar sticky />
       <div className="wrapper">
         <ProfilePageHeader />
         <div className="section">
